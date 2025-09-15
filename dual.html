@@ -1,0 +1,41 @@
+<!doctype html>
+<html\1 data-mode="viewer">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Dual View — Editor ↔ Viewer</title>
+  <link rel="stylesheet" href="assets/global-responsive.css" />
+  <script defer src="assets/global-responsive.js"></script>
+  <script defer src="assets/mode-compat.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap navbar"><strong>Dual View</strong></div>
+  </header>
+  <section class="wrap" style="padding:12px">
+    <label>Page <input id="page" type="text" value="home.html"></label>
+    <label>Slug <input id="slug" type="text" placeholder="optional for project/emm/bio"></label>
+    <button id="load">Load</button>
+    <div class="split" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;height:70vh;margin-top:12px">
+      <iframe id="left" title="Editor" style="width:100%;height:100%;border:1px solid #e5eaf6;border-radius:12px;"></iframe>
+      <iframe id="right" title="Viewer" style="width:100%;height:100%;border:1px solid #e5eaf6;border-radius:12px;"></iframe>
+    </div>
+  </section>
+  <script>
+    const qs = (s)=>document.querySelector(s);
+    const left = qs("#left"), right = qs("#right");
+    function setMode(doc, mode){ try{ doc.documentElement.setAttribute("data-mode", mode);}catch{} try{ doc.defaultView.localStorage.setItem("tsn:mode", mode); }catch{} }
+    function load(){
+      const page = qs("#page").value.trim() || "home.html";
+      const slug = qs("#slug").value.trim();
+      const url = slug ? `${page}?slug=${encodeURIComponent(slug)}` : page;
+      left.src = url; right.src = url;
+    }
+    qs("#load").addEventListener("click", load);
+    left.addEventListener("load", ()=> setMode(left.contentDocument, "editor"));
+    right.addEventListener("load", ()=> setMode(right.contentDocument, "viewer"));
+    load();
+  </script>
+<script type="module" src="assets/live-all-norepl.js"></script>
+</body>
+</html>
