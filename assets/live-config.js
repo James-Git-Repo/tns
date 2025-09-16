@@ -21,8 +21,8 @@ export function detectConfig(){
   }
   if (explicitTable){ const keyColumn = explicitKeyCol || "slug"; const keyValue = explicitKeyVal || getSlug() || getPathKey(); return { table: explicitTable, keyColumn, keyValue, bindings }; }
   const name = location.pathname.split("/").pop().toLowerCase(); const slug = getSlug();
-  if (name.startswith?.("project") || name.indexOf("project")===0) return { table: "project_pages", keyColumn: "slug", keyValue: slug, bindings };
-  if (name.indexOf("emm")===0) return { table: "emm_articles", keyColumn: "slug", keyValue: slug || getPathKey(), bindings, fallback: { table: "site_pages", keyColumn: "path", keyValue: getPathKey() } };
+  if (name.startsWith("project")) return { table: "project_pages", keyColumn: "slug", keyValue: slug, bindings };
+  if (name.startsWith("emm")) return { table: "emm_articles", keyColumn: "slug", keyValue: slug || getPathKey(), bindings, fallback: { table: "site_pages", keyColumn: "path", keyValue: getPathKey() } };
   if (name.includes("bio")) return { table: "bio_pages", keyColumn: "slug", keyValue: slug || getPathKey(), bindings, fallback: { table: "site_pages", keyColumn: "path", keyValue: getPathKey() } };
   return { table: "site_pages", keyColumn: "path", keyValue: getPathKey(), bindings };
 }

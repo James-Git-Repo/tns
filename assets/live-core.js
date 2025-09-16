@@ -28,6 +28,13 @@ export function applyBindings(row, bindings){
 export function collectEditable(bindings){
   const list = []; for (const field in bindings){ const b = bindings[field]; if (b && b.makeEditable){ b.makeEditable(); list.push([field, b]); } } return list;
 }
+export async function wireLiveViewer({ table, keyColumn, keyValue, bindings }){
+  const one = await sb.from(table).select("*").eq(keyColumn, keyValue).maybeSingle();
+  if (!one.error && one.data) applyBindings(one.data, bindings);
+  const chan = sb.channel(`realtime:${table}:${keyColumn}:${keyValue}`);
+  chan.on("postgres_changes", { event: "*", schema: "public", table, filter: `${keyColumn}=eq.${keyValue}` }, (payload)=>{ applyBindings(payload.new, bindings); });
+  chan.subscribe();
+}
 export async function wireLiveEditor({ table, keyColumn, keyValue, editableBindings }){
   const debouncedSave = debounce(async (delta)=>{
     const update = { ...delta, status: "published", updated_at: new Date().toISOString() };
